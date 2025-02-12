@@ -1,7 +1,7 @@
 {
   "name": "gemini-chat",
   "version": "1.0.0",
-  "description": "",
+  "description": "We will use [Google AI SDK for JavaScript](https://github.com/google-gemini/generative-ai-js) and Node.js to develop a backend which talks to Google Gemini. The front end provides a web page which includes a prompt for questions.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google/generative-ai": "^0.21.1",
+    "@google/generative-ai": "^0.16.1",
     "dompurify": "^3.2.4",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsdom": "^26.0.0",
     "marked": "^15.0.7"
