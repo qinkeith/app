@@ -95,3 +95,15 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.system-message-container {
+    margin-bottom: 10px;
+}
+
+#systemMessage {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
