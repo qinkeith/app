@@ -1,0 +1,38 @@
+<mat-card class="chat-container">
+  <mat-card-header>
+    <mat-card-title>Ask Gemini</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="system-message-container">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>System Message</mat-label>
+        <input matInput [(ngModel)]="systemMessage" placeholder="Enter system message...">
+      </mat-form-field>
+    </div>
+
+    <div #chatContainer class="chat-messages">
+      <div *ngFor="let message of messages" 
+           class="message" 
+           [ngClass]="message.type + '-message'">
+        <div *ngIf="message.isHtml" [innerHTML]="message.content"></div>
+        <div *ngIf="!message.isHtml">{{message.content}}</div>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Your question</mat-label>
+        <input matInput 
+               [(ngModel)]="question" 
+               placeholder="Type your question here..."
+               (keyup.enter)="sendQuestion()">
+      </mat-form-field>
+      <button mat-raised-button 
+              color="primary" 
+              (click)="sendQuestion()">
+        Send
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>
