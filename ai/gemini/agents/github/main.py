@@ -1,11 +1,15 @@
+import pdb
 from dotenv import load_dotenv
 import os
 
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain.agents import create_tool_calling_agent
 from langchain_astradb import AstraDBVectorStore
 from github import fetch_github_issues
-
+from langchain import hub
+from langchain.agents import AgentExecutor
+from langchain.tools.retriever import create_retriever_tool
+from note import note_tool
 
 load_dotenv()
 
@@ -25,7 +29,6 @@ def connect_to_vstore():
         token=ASTRA_DB_APPLICATION_TOKEN,
         namespace=ASTRA_DB_KEYSPACE,
     )
-    print("Connected to Vector Store")
     return vstore
 
 vstore = connect_to_vstore()
@@ -43,14 +46,25 @@ if add_to_vectorstore:
         pass
 
     vstore = connect_to_vstore()
-
     vstore.add_documents(issues)
 
-    results = vstore.similarity_search("flash messages", k=5)
-    for res in results:
-        print(f"*{res.page_content}") 
+retriever = vstore.as_retriever(search_kwargs={"k": 3})
+print(f"* {retriever}")
+retriever_tool = create_retriever_tool(
+    retriever,
+    "github_search",
+    "Search for information about issues. For any questions about github, use this tool.",
+)
 
+prompt = hub.pull("hwchase17/openai-functions-agent")
 
+# Create a chat model instead of embeddings model for the agent
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
+tools = [retriever_tool, note_tool]
+agent = create_tool_calling_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)  # Fixed ArithmeticError to AgentExecutor
 
-
+while (question := input("Ask a question about github issues (q to quit): ")) != "q":
+    result = agent_executor.invoke({"input": question})
+    print(result["output"])
