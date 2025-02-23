@@ -80,9 +80,10 @@ prompt = ChatPromptTemplate.from_messages([
 # Create a google chat model for the agent
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-# Create the agent with proper tool descriptions
+# Setup the proper tool descriptions
 tool_descriptions = "\n".join([f"- {tool.name}: {tool.description}" for tool in tools])
 
+# Bind the llm, tools, and prompts together to create an agent
 agent = create_tool_calling_agent(
     llm=llm,
     tools=tools,
