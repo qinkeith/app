@@ -1,4 +1,4 @@
-# Gemini Coding Assistant for VSCode
+# Gemini Assistant for VSCode
 
 The Gemini Coding Assistant is a VS Code extension that integrates Google's Gemini AI models to provide intelligent coding assistance directly within the editor. It allows developers to ask questions about their code, get suggestions, and interact with Gemini's AI capabilities without leaving VS Code.
 

@@ -1,6 +1,6 @@
 {
   "name": "vscode-gemini-assistant",
-  "displayName": "Gemini Coding Assistant",
+  "displayName": "Gemini Assistant",
   "description": "AI coding assistant powered by Google's Gemini LLM",
   "version": "1.0.0",
   "publisher": "Bini",
