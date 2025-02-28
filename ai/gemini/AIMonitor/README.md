@@ -21,6 +21,12 @@ The application performs the following actions:
 
 5. Automated Fix Application: Allows the user to select recommended fixes and apply them. The application includes basic automated fix implementation for some common vulnerabilities (e.g., starting the Windows Update service, enabling the firewall, setting UAC to a recommended level, and disabling SMBv1) using `sc` and `netsh` commands and PowerShell. For other vulnerabilities, it generates a placeholder PowerShell script that simulates the fix application. A progress bar and a dedicated status display are included.
 
+## Build the program
+
+- Go to AIMonitor's root folder
+- Run `dotnet build` 
+- Run `dotnet publish -c Release -r win-x64 --self-contained true`
+
 ## Limitations
 
 - Partial Automation: Currently, automation is limited; many fixes would require more sophisticated code to handle diverse vulnerability types and scenarios. The code simulates applying fixes for many cases.

@@ -18,9 +18,9 @@ namespace WindowsSecurityMonitor
 {
     public class Program
     {
-        private static readonly HttpClient client = new HttpClient();
-        private static readonly string GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
-        private static readonly string GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent";
+        public static readonly HttpClient client = new HttpClient();
+        public static readonly string GEMINI_API_KEY = "AIzaSyDvXiSUar7wyPL2EO9fW2EdmsXjhrOeYtQ";
+        public static readonly string GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent";
 
         [STAThread]
         static void Main()
@@ -371,9 +371,10 @@ namespace WindowsSecurityMonitor
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 // Add the API key as a query parameter
-                string url = $"{GEMINI_API_URL}?key={GEMINI_API_KEY}";
+                //string url = $"{GEMINI_API_URL}?key={GEMINI_API_KEY}";
+                string url = $"{Program.GEMINI_API_URL}?key={Program.GEMINI_API_KEY}";
                 
-                var response = await client.PostAsync(url, content);
+                var response = await Program.client.PostAsync(url, content);
                 response.EnsureSuccessStatusCode();
                 
                 var responseBody = await response.Content.ReadAsStringAsync();
@@ -533,14 +534,15 @@ namespace WindowsSecurityMonitor
                 {
                     case "windows update":
                         // Start Windows Update service
-                        using (var service = new ServiceController("wuauserv"))
-                        //using (var service = new System.ServiceProcess.ServiceController("wuauserv"))
-                        {
+                        var service = new ServiceController("wuauserv");
+                        try {
                             if (service.Status != ServiceControllerStatus.Running)
                             {
                                 service.Start();
                                 service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
                             }
+                        } finally {
+                            service.Stop();
                         }
                         return true;
                         
@@ -671,7 +673,8 @@ namespace WindowsSecurityMonitor
                 try
                 {
                     // Check Windows Update service status
-                    using (ServiceController service = new ServiceController("wuauserv"))
+                    ServiceController service = new ServiceController("wuauserv");
+                    try
                     {
                         if (service.Status != ServiceControllerStatus.Running)
                         {
@@ -682,6 +685,8 @@ namespace WindowsSecurityMonitor
                                 Severity = SeverityLevel.High
                             });
                         }
+                    } finally {
+                        service.Stop();
                     }
                     
                     // Check last update time
@@ -1154,6 +1159,28 @@ namespace WindowsSecurityMonitor
             Process process = Process.Start(psi);
             process.WaitForExit();
         }
+        
+    public void Stop()
+    {
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "sc",
+            Arguments = $"stop {serviceName}",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardError = true //Added to capture errors
+        };
+
+        Process process = Process.Start(psi);
+        process.WaitForExit();
+
+        //Check for errors.  sc.exe returns non-zero exit codes on failure.
+        if (process.ExitCode != 0)
+        {
+            string error = process.StandardError.ReadToEnd();
+            throw new Exception($"Failed to stop service '{serviceName}': {error}");
+        }
+    }        
         
         public void WaitForStatus(ServiceControllerStatus desiredStatus, TimeSpan timeout)
         {
